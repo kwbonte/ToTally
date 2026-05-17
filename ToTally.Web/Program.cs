@@ -1,4 +1,4 @@
-using Totally.Web.Components;
+using ToTally.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
