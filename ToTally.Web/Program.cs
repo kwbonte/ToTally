@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using ToTally.Infrastructure.Data;
 using ToTally.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<ToTallyDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ToTallyDatabase"));
+});
 
 var app = builder.Build();
 
