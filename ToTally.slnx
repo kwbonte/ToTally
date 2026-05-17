@@ -3,4 +3,5 @@
   <Project Path="ToTally.Application/ToTally.Application.csproj" />
   <Project Path="ToTally.Domain/ToTally.Domain.csproj" />
   <Project Path="ToTally.Infrastructure/ToTally.Infrastructure.csproj" />
+  <Project Path="tests/ToTally.Tests/ToTally.Tests.csproj" />
 </Solution>
