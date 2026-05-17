@@ -1,0 +1,100 @@
+# Build outputs
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# .NET user-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/.vs/
+*.ncrunch*
+*.DotSettings.user
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Test results and coverage
+TestResults/
+coverage/
+coverage.cobertura.xml
+*.coverage
+*.coveragexml
+*.trx
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.assets.json
+
+# Logs
+*.log
+logs/
+LogFiles/
+
+# Environment / secrets
+.env
+.env.*
+*.local
+appsettings.Local.json
+appsettings.*.local.json
+secrets.json
+
+# ASP.NET user secrets should not be committed
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker local volume/data junk
+docker-data/
+postgres-data/
+pgdata/
+
+# EF Core generated temporary files
+Migrations/*.Designer.cs.bak
+
+# Node / frontend artifacts, useful if you add JS tooling later
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+.cache/
+.parcel-cache/
+
+# OS junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+~$*
