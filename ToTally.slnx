@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="ToTally.Web/ToTally.Web.csproj" />
+  <Project Path="ToTally.Application/ToTally.Application.csproj" />
+  <Project Path="ToTally.Domain/ToTally.Domain.csproj" />
+  <Project Path="ToTally.Infrastructure/ToTally.Infrastructure.csproj" />
 </Solution>
