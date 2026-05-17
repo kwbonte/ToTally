@@ -37,6 +37,11 @@ public class ToTallyDbContext : DbContext
 
             entity.HasIndex(league => league.Abbreviation)
                 .IsUnique();
+
+            entity.Property(league => league.Sport)
+                .HasColumnName("sport")
+                .HasMaxLength(50)
+                .IsRequired();
         });
     }
 }

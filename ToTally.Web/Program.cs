@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<ToTallyDbContext>(options =>
+builder.Services.AddDbContextFactory<ToTallyDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ToTallyDatabase"));
 });

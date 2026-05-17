@@ -1,7 +1,85 @@
 @page "/"
 
-<PageTitle>Home</PageTitle>
+@using Microsoft.EntityFrameworkCore
+@using ToTally.Domain.Leagues
+@using ToTally.Infrastructure.Data
+@inject IDbContextFactory<ToTallyDbContext> DbContextFactory
 
-<h1>Hello, world!</h1>
+<PageTitle>ToTally - Leagues</PageTitle>
 
-Welcome to your new app.
+<h1>ToTally</h1>
+
+<p>Available leagues</p>
+
+@if (isLoading)
+{
+    <p>Loading leagues...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+else if (leagues.Count == 0)
+{
+    <p>No leagues found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Abbreviation</th>
+                @if (hasSportColumn)
+                {
+                    <th>Sport</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var league in leagues)
+            {
+                <tr>
+                    <td>@league.Name</td>
+                    <td>@league.Abbreviation</td>
+                    @if (hasSportColumn)
+                    {
+                        <td>@league.Sport</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<League> leagues = [];
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    // Set this to false if you have not added the Sport column yet.
+    private readonly bool hasSportColumn = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await using var dbContext = await DbContextFactory.CreateDbContextAsync();
+
+            leagues = await dbContext.Leagues
+                .AsNoTracking()
+                .OrderBy(league => league.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to load leagues: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
