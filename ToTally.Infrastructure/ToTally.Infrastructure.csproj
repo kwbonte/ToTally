@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToTally.Domain\ToTally.Domain.csproj" />
+    <ProjectReference Include="..\ToTally.Application\ToTally.Application.csproj" />
   </ItemGroup>
 
 </Project>

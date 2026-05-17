@@ -1,25 +1,16 @@
 @page "/"
 
-@using Microsoft.EntityFrameworkCore
-@using ToTally.Domain.Leagues
-@using ToTally.Infrastructure.Data
-@inject IDbContextFactory<ToTallyDbContext> DbContextFactory
+@using ToTally.Application.Interfaces
+@using ToTally.Application.DTOs.Leagues
+@inject ILeagueService LeagueService
 
 <PageTitle>ToTally - Leagues</PageTitle>
 
 <h1>ToTally</h1>
 
-<p>Available leagues</p>
-
 @if (isLoading)
 {
     <p>Loading leagues...</p>
-}
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
 }
 else if (leagues.Count == 0)
 {
@@ -32,10 +23,7 @@ else
             <tr>
                 <th>Name</th>
                 <th>Abbreviation</th>
-                @if (hasSportColumn)
-                {
-                    <th>Sport</th>
-                }
+                <th>Sport</th>
             </tr>
         </thead>
         <tbody>
@@ -44,10 +32,7 @@ else
                 <tr>
                     <td>@league.Name</td>
                     <td>@league.Abbreviation</td>
-                    @if (hasSportColumn)
-                    {
-                        <td>@league.Sport</td>
-                    }
+                    <td>@league.Sport</td>
                 </tr>
             }
         </tbody>
@@ -55,31 +40,12 @@ else
 }
 
 @code {
-    private List<League> leagues = [];
+    private IReadOnlyList<LeagueListItem> leagues = [];
     private bool isLoading = true;
-    private string? errorMessage;
-
-    // Set this to false if you have not added the Sport column yet.
-    private readonly bool hasSportColumn = true;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            await using var dbContext = await DbContextFactory.CreateDbContextAsync();
-
-            leagues = await dbContext.Leagues
-                .AsNoTracking()
-                .OrderBy(league => league.Name)
-                .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Unable to load leagues: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        leagues = await LeagueService.GetAllAsync();
+        isLoading = false;
     }
 }

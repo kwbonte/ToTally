@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using ToTally.Application.Interfaces;
 using ToTally.Infrastructure.Data;
 using ToTally.Web.Components;
+using ToTally.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ builder.Services.AddDbContextFactory<ToTallyDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ToTallyDatabase"));
 });
+
+// register services
+builder.Services.AddScoped<ILeagueService, LeagueService>();
 
 var app = builder.Build();
 
