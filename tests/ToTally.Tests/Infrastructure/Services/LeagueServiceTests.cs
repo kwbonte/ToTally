@@ -7,6 +7,17 @@ namespace ToTally.Tests.Application.Services;
 
 public sealed class LeagueServiceTests
 {
+   [Fact]
+    public void Constructor_WhenRepositoryIsNull_ThrowsArgumentNullException()
+    {
+        // Act
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+            new LeagueService(null!));
+
+        // Assert
+        Assert.Equal("leagueRepository", exception.ParamName);
+    }
+
     [Fact]
     public async Task GetAllAsync_WhenLeaguesExist_ReturnsAllLeaguesOrderedByName()
     {
@@ -36,6 +47,77 @@ public sealed class LeagueServiceTests
 
         repositoryMock.Verify(
             repository => repository.GetAllAsync(It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_WhenLeaguesExist_MapsLeaguePropertiesToListItems()
+    {
+        // Arrange
+        var repositoryMock = new Mock<ILeagueRepository>();
+
+        repositoryMock
+            .Setup(repository => repository.GetAllAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<League>
+            {
+                new("National Football League", "nfl", "Football")
+            });
+
+        var service = new LeagueService(repositoryMock.Object);
+
+        // Act
+        var result = await service.GetAllAsync();
+
+        // Assert
+        var league = Assert.Single(result);
+
+        Assert.Equal("National Football League", league.Name);
+        Assert.Equal("NFL", league.Abbreviation);
+        Assert.Equal("Football", league.Sport);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_WhenNoLeaguesExist_ReturnsEmptyList()
+    {
+        // Arrange
+        var repositoryMock = new Mock<ILeagueRepository>();
+
+        repositoryMock
+            .Setup(repository => repository.GetAllAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        var service = new LeagueService(repositoryMock.Object);
+
+        // Act
+        var result = await service.GetAllAsync();
+
+        // Assert
+        Assert.Empty(result);
+
+        repositoryMock.Verify(
+            repository => repository.GetAllAsync(It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_PassesCancellationTokenToRepository()
+    {
+        // Arrange
+        var repositoryMock = new Mock<ILeagueRepository>();
+        using var cancellationTokenSource = new CancellationTokenSource();
+
+        repositoryMock
+            .Setup(repository => repository.GetAllAsync(cancellationTokenSource.Token))
+            .ReturnsAsync([]);
+
+        var service = new LeagueService(repositoryMock.Object);
+
+        // Act
+        await service.GetAllAsync(cancellationTokenSource.Token);
+
+        // Assert
+        repositoryMock.Verify(
+            repository => repository.GetAllAsync(cancellationTokenSource.Token),
             Times.Once);
     }
 }

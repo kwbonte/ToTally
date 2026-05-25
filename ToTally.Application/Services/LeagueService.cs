@@ -9,7 +9,7 @@ public sealed class LeagueService : ILeagueService
 
     public LeagueService(ILeagueRepository leagueRepository)
     {
-        _leagueRepository = leagueRepository;
+        _leagueRepository = leagueRepository ?? throw new ArgumentNullException(nameof(leagueRepository));
     }
 
     public async Task<IReadOnlyList<LeagueListItem>> GetAllAsync(
