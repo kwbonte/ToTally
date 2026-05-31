@@ -21,6 +21,7 @@ public sealed class LeagueRepository : ILeagueRepository
 
         return await dbContext.Leagues
             .AsNoTracking()
+            .Where(league => !league.IsDeleted)
             .ToListAsync(cancellationToken);
     }
 }
