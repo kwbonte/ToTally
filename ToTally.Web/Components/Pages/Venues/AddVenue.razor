@@ -1,0 +1,154 @@
+@page "/venues/add"
+@rendermode InteractiveServer
+@using ToTally.Application.DTOs.Venues
+@using ToTally.Application.Interfaces
+@inject IVenueService VenueService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Add Venue</PageTitle>
+
+<h1>Add Venue</h1>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <EditForm Model="_request"
+          FormName="AddVenueForm"
+          OnValidSubmit="HandleValidSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Venue Name</label>
+                <InputText id="name"
+                           class="form-control"
+                           @bind-Value="_request.Name" />
+                <ValidationMessage For="@(() => _request.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <InputText id="city"
+                           class="form-control"
+                           @bind-Value="_request.City" />
+                <ValidationMessage For="@(() => _request.City)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="stateOrCountry" class="form-label">State / Country</label>
+                <InputText id="stateOrCountry"
+                           class="form-control"
+                           @bind-Value="_request.StateOrCountry" />
+                <ValidationMessage For="@(() => _request.StateOrCountry)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="latitude" class="form-label">Latitude</label>
+                <InputNumber id="latitude"
+                             class="form-control"
+                             @bind-Value="_request.Latitude" />
+                <ValidationMessage For="@(() => _request.Latitude)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="longitude" class="form-label">Longitude</label>
+                <InputNumber id="longitude"
+                             class="form-control"
+                             @bind-Value="_request.Longitude" />
+                <ValidationMessage For="@(() => _request.Longitude)" />
+            </div>
+
+            <div class="form-check mb-3">
+                <InputCheckbox id="isDome"
+                               class="form-check-input"
+                               @bind-Value="_request.IsDome" />
+                <label for="isDome" class="form-check-label">
+                    Dome
+                </label>
+            </div>
+
+            <div class="form-check mb-3">
+                <InputCheckbox id="isNeutralSiteCapable"
+                               class="form-check-input"
+                               @bind-Value="_request.IsNeutralSiteCapable" />
+                <label for="isNeutralSiteCapable" class="form-check-label">
+                    Neutral site capable
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    disabled="@_isSaving">
+                @(_isSaving ? "Saving..." : "Add Venue")
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary ms-2"
+                    @onclick="Cancel"
+                    disabled="@_isSaving">
+                Cancel
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@if (_createdVenueId.HasValue)
+{
+    <div class="alert alert-success mt-3">
+        Venue created successfully. Id: @_createdVenueId
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <div class="alert alert-danger mt-3">
+        @_errorMessage
+    </div>
+}
+
+@code {
+    private readonly CreateVenueRequest _request = new();
+
+    private bool _isSaving;
+
+    private Guid? _createdVenueId;
+
+    private string? _errorMessage;
+
+    private async Task HandleValidSubmitAsync()
+    {
+        _isSaving = true;
+        _createdVenueId = null;
+        _errorMessage = null;
+
+        try
+        {
+            _createdVenueId = await VenueService.CreateAsync(_request);
+
+            NavigationManager.NavigateTo("/venues");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void ResetForm()
+    {
+        _request.Name = string.Empty;
+        _request.City = string.Empty;
+        _request.StateOrCountry = string.Empty;
+        _request.Latitude = null;
+        _request.Longitude = null;
+        _request.IsDome = false;
+        _request.IsNeutralSiteCapable = false;
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/venues");
+    }
+}

@@ -1,5 +1,6 @@
 using ToTally.Application.DTOs.Venues;
 using ToTally.Application.Interfaces;
+using ToTally.Domain.Venues;
 
 namespace ToTally.Application.Services;
 
@@ -12,6 +13,33 @@ public sealed class VenueService : IVenueService
         _venueRepository = venueRepository ?? throw new ArgumentNullException(nameof(venueRepository));
     }
 
+    #region Create
+    public async Task<Guid> CreateAsync(
+        CreateVenueRequest createVenueDto,
+        CancellationToken cancellationToken = default)
+    {
+         var venue = new Venue(
+        createVenueDto.Name,
+        createVenueDto.City,
+        createVenueDto.StateOrCountry,
+        createVenueDto.Latitude,
+        createVenueDto.Longitude,
+        createVenueDto.IsDome,
+        createVenueDto.IsNeutralSiteCapable);
+
+        venue.MarkCreated(
+            userId: "kwbonte", // Change if other people work on this project
+            nowUtc: DateTimeOffset.UtcNow);
+
+        var createdVenue = await _venueRepository.CreateAsync(
+            venue,
+            cancellationToken);
+        return createdVenue.Id;
+        // return MapToDto(createdVenue);
+    }
+    #endregion
+
+    #region Read
     public async Task<IReadOnlyList<VenueDto>> GetAllAsync(
         CancellationToken cancellationToken = default)
     {
@@ -32,4 +60,5 @@ public sealed class VenueService : IVenueService
             })
             .ToList();
     }
+    #endregion
 }

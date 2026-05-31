@@ -24,7 +24,7 @@ public sealed class Venue : EntityBase
     {
     }
 
-    public Venue(
+     public Venue(
         string name,
         string city,
         string stateOrCountry,
@@ -33,10 +33,39 @@ public sealed class Venue : EntityBase
         bool isDome = false,
         bool isNeutralSiteCapable = false)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Venue name is required.", nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(city))
+        {
+            throw new ArgumentException("City is required.", nameof(city));
+        }
+
+        if (string.IsNullOrWhiteSpace(stateOrCountry))
+        {
+            throw new ArgumentException("State or country is required.", nameof(stateOrCountry));
+        }
+
+        if (latitude is < -90 or > 90)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(latitude),
+                "Latitude must be between -90 and 90.");
+        }
+
+        if (longitude is < -180 or > 180)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(longitude),
+                "Longitude must be between -180 and 180.");
+        }
+
         Id = Guid.NewGuid();
-        Name = name;
-        City = city;
-        StateOrCountry = stateOrCountry;
+        Name = name.Trim();
+        City = city.Trim();
+        StateOrCountry = stateOrCountry.Trim();
         Latitude = latitude;
         Longitude = longitude;
         IsDome = isDome;

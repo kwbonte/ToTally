@@ -1,0 +1,99 @@
+@page "/venues"
+@rendermode InteractiveServer
+@using ToTally.Application.DTOs.Venues
+@using ToTally.Application.Interfaces
+@inject IVenueService VenueService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Venues</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Venues</h1>
+
+    <a class="btn btn-primary" href="/venues/add">
+        Add Venue
+    </a>
+</div>
+
+@if (_isLoading)
+{
+    <p>Loading venues...</p>
+}
+else if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <div class="alert alert-danger">
+        @_errorMessage
+    </div>
+}
+else if (_venues.Count == 0)
+{
+    <div class="alert alert-info">
+        No venues found.
+    </div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>State / Country</th>
+                <th>Dome</th>
+                <th>Shared Stadium</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var venue in _venues)
+            {
+                <tr>
+                    <td>@venue.Name</td>
+                    <td>@venue.City</td>
+                    <td>@venue.StateOrCountry</td>
+                    <td>@FormatBool(venue.IsDome)</td>
+                    <td>@FormatBool(venue.IsNeutralSiteCapable)</td>
+                    <td>@FormatCoordinate(venue.Latitude)</td>
+                    <td>@FormatCoordinate(venue.Longitude)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<VenueDto> _venues = [];
+
+    private bool _isLoading = true;
+
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _venues = await VenueService.GetAllAsync();
+        }
+        catch (Exception)
+        {
+            _errorMessage = "Something went wrong while loading venues.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatBool(bool value)
+    {
+        return value ? "Yes" : "No";
+    }
+
+    private static string FormatCoordinate(decimal? value)
+    {
+        return value.HasValue
+            ? value.Value.ToString("0.######")
+            : string.Empty;
+    }
+}

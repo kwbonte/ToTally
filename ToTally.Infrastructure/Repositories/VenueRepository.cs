@@ -14,6 +14,22 @@ public sealed class VenueRepository : IVenueRepository
         _dbContextFactory = dbContextFactory;
     }
 
+    #region Create
+    public async Task<Venue> CreateAsync(
+        Venue venue,
+        CancellationToken cancellationToken = default)
+    {
+        await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        var createdVenue = (await dbContext.Venues.AddAsync(venue, cancellationToken)).Entity;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return createdVenue;
+    }
+    #endregion
+
+    #region Read
     public async Task<IReadOnlyList<Venue>> GetAllAsync(
         CancellationToken cancellationToken = default)
     {
@@ -24,4 +40,5 @@ public sealed class VenueRepository : IVenueRepository
             .Where(venue => !venue.IsDeleted)
             .ToListAsync(cancellationToken);
     }
+    #endregion
 }
