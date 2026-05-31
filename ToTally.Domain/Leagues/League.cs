@@ -1,6 +1,8 @@
+using ToTally.Domain.Common;
+
 namespace ToTally.Domain.Leagues;
 
-public class League
+public class League : EntityBase
 {
     public int Id { get; private set; }
 

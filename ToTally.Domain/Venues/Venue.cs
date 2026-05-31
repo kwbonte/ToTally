@@ -1,6 +1,8 @@
+using ToTally.Domain.Common;
+
 namespace ToTally.Domain.Venues;
 
-public sealed class Venue
+public sealed class Venue : EntityBase
 {
     public Guid Id { get; private set; }
 

@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ToTally.Domain.Common;
 using ToTally.Domain.Leagues;
 using ToTally.Domain.Venues;
 
@@ -12,6 +15,20 @@ public class ToTallyDbContext : DbContext
     }
 
     public DbSet<League> Leagues => Set<League>();
+
+    public DbSet<Venue> Venues => Set<Venue>();
+
+    public override int SaveChanges()
+    {
+        ApplyEntityBaseRules();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ApplyEntityBaseRules();
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,9 +60,11 @@ public class ToTallyDbContext : DbContext
                 .HasColumnName("sport")
                 .HasMaxLength(50)
                 .IsRequired();
+
+            ConfigureEntityBase(entity);
         });
 
-         modelBuilder.Entity<Venue>(entity =>
+        modelBuilder.Entity<Venue>(entity =>
         {
             entity.ToTable("venues");
 
@@ -86,6 +105,68 @@ public class ToTallyDbContext : DbContext
                 .IsRequired();
 
             entity.HasIndex(venue => venue.Name);
+
+            ConfigureEntityBase(entity);
         });
+    }
+
+    private static void ConfigureEntityBase<TEntity>(EntityTypeBuilder<TEntity> entity)
+        where TEntity : EntityBase
+    {
+        entity.Property(item => item.CreatedOnUtc)
+            .HasColumnName("created_on_utc")
+            .IsRequired();
+
+        entity.Property(item => item.CreatedBy)
+            .HasColumnName("created_by")
+            .HasMaxLength(150);
+
+        entity.Property(item => item.ModifiedOnUtc)
+            .HasColumnName("modified_on_utc");
+
+        entity.Property(item => item.ModifiedBy)
+            .HasColumnName("modified_by")
+            .HasMaxLength(150);
+
+        entity.Property(item => item.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false)
+            .IsRequired();
+
+        entity.Property(item => item.DeletedOnUtc)
+            .HasColumnName("deleted_on_utc");
+
+        entity.Property(item => item.DeletedBy)
+            .HasColumnName("deleted_by")
+            .HasMaxLength(150);
+
+        entity.HasQueryFilter(item => !item.IsDeleted);
+    }
+
+    private void ApplyEntityBaseRules()
+    {
+        var nowUtc = DateTimeOffset.UtcNow;
+
+        // Temporary placeholder until you wire up real auth/current-user tracking.
+        const string systemUser = "system";
+
+        foreach (EntityEntry<EntityBase> entry in ChangeTracker.Entries<EntityBase>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.MarkCreated(systemUser, nowUtc);
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.MarkModified(systemUser, nowUtc);
+            }
+
+            if (entry.State == EntityState.Deleted)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.MarkDeleted(systemUser, nowUtc);
+            }
+        }
     }
 }
