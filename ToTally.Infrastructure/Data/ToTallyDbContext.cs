@@ -133,13 +133,6 @@ public class ToTallyDbContext : DbContext
             .HasDefaultValue(false)
             .IsRequired();
 
-        entity.Property(item => item.DeletedOnUtc)
-            .HasColumnName("deleted_on_utc");
-
-        entity.Property(item => item.DeletedBy)
-            .HasColumnName("deleted_by")
-            .HasMaxLength(150);
-
         entity.HasQueryFilter(item => !item.IsDeleted);
     }
 

@@ -8,8 +8,6 @@ public abstract class EntityBase
     public string? ModifiedBy { get; private set; }
 
     public bool IsDeleted { get; private set; }
-    public DateTimeOffset? DeletedOnUtc { get; private set; }
-    public string? DeletedBy { get; private set; }
 
     public void MarkCreated(string? userId, DateTimeOffset nowUtc)
     {
@@ -32,8 +30,6 @@ public abstract class EntityBase
         }
 
         IsDeleted = true;
-        DeletedOnUtc = nowUtc;
-        DeletedBy = userId;
         MarkModified(userId, nowUtc);
     }
 
@@ -45,8 +41,6 @@ public abstract class EntityBase
         }
 
         IsDeleted = false;
-        DeletedOnUtc = null;
-        DeletedBy = null;
         MarkModified(userId, nowUtc);
     }
 }
