@@ -1,7 +1,7 @@
 using Moq;
 using ToTally.Application.Interfaces;
 using ToTally.Domain.Leagues;
-using ToTally.Infrastructure.Services;
+using ToTally.Application.Services;
 
 namespace ToTally.Tests.Application.Services;
 
@@ -18,6 +18,7 @@ public sealed class LeagueServiceTests
         Assert.Equal("leagueRepository", exception.ParamName);
     }
 
+// Todo update these items with the tracked entity based testing
     [Fact]
     public async Task GetAllAsync_WhenLeaguesExist_ReturnsAllLeaguesOrderedByName()
     {
