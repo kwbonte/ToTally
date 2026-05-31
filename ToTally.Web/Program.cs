@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using ToTally.Application.Interfaces;
 using ToTally.Infrastructure.Data;
 using ToTally.Web.Components;
-using ToTally.Infrastructure.Services;
 using ToTally.Infrastructure.Repositories;
+using ToTally.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +19,8 @@ builder.Services.AddDbContextFactory<ToTallyDbContext>(options =>
 // register services
 builder.Services.AddScoped<ILeagueRepository, LeagueRepository>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
-
+builder.Services.AddScoped<IVenueService, VenueService>();
+builder.Services.AddScoped<IVenueRepository, VenueRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

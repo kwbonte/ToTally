@@ -1,7 +1,7 @@
 using ToTally.Application.DTOs.Leagues;
 using ToTally.Application.Interfaces;
 
-namespace ToTally.Infrastructure.Services;
+namespace ToTally.Application.Services;
 
 public sealed class LeagueService : ILeagueService
 {
