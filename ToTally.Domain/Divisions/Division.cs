@@ -1,5 +1,6 @@
 using ToTally.Domain.Common;
 using ToTally.Domain.Conferences;
+using ToTally.Domain.Teams;
 
 namespace ToTally.Domain.Divisions;
 
@@ -12,7 +13,7 @@ public class Division : EntityBase
 
     public string Name { get; private set; } = string.Empty;
     public string Abbreviation { get; private set; } = string.Empty;
-
+    public ICollection<Team> Teams { get; private set; } = new List<Team>();
     private Division()
     {
     }

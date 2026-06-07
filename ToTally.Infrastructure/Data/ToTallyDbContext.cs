@@ -5,6 +5,7 @@ using ToTally.Domain.Common;
 using ToTally.Domain.Conferences;
 using ToTally.Domain.Divisions;
 using ToTally.Domain.Leagues;
+using ToTally.Domain.Teams;
 using ToTally.Domain.Venues;
 
 namespace ToTally.Infrastructure.Data;
@@ -23,6 +24,7 @@ public class ToTallyDbContext : DbContext
     public DbSet<Conference> Conferences => Set<Conference>();
 
     public DbSet<Division> Divisions => Set<Division>();
+    public DbSet<Team> Teams => Set<Team>();
     public override int SaveChanges()
     {
         ApplyEntityBaseRules();
@@ -196,6 +198,60 @@ public class ToTallyDbContext : DbContext
                 .IsRequired();
 
             entity.HasIndex(venue => venue.Name);
+
+            ConfigureEntityBase(entity);
+        });
+
+        modelBuilder.Entity<Team>(entity =>
+        {
+            entity.ToTable("teams");
+
+            entity.HasKey(team => team.Id);
+
+            entity.Property(team => team.Id)
+                .HasColumnName("id");
+
+            entity.Property(team => team.DivisionId)
+                .HasColumnName("division_id")
+                .IsRequired();
+
+            entity.Property(team => team.VenueId)
+                .HasColumnName("venue_id")
+                .IsRequired();
+
+            entity.Property(team => team.Name)
+                .HasColumnName("name")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(team => team.Abbreviation)
+                .HasColumnName("abbreviation")
+                .HasMaxLength(10)
+                .IsRequired();
+
+            entity.Property(team => team.City)
+                .HasColumnName("city")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.HasOne(team => team.Division)
+                .WithMany(division => division.Teams)
+                .HasForeignKey(team => team.DivisionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(team => team.Venue)
+                .WithMany()
+                .HasForeignKey(team => team.VenueId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(team => team.Abbreviation)
+                .IsUnique();
+
+            entity.HasIndex(team => new
+            {
+                team.City,
+                team.Name
+            }).IsUnique();
 
             ConfigureEntityBase(entity);
         });

@@ -21,6 +21,8 @@ builder.Services.AddScoped<ILeagueRepository, LeagueRepository>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<IVenueRepository, VenueRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<ITeamService, TeamService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
