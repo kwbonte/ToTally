@@ -1,4 +1,5 @@
 using ToTally.Domain.Common;
+using ToTally.Domain.Conferences;
 
 namespace ToTally.Domain.Leagues;
 
@@ -12,6 +13,10 @@ public class League : EntityBase
 
     public string Sport { get; private set; } = string.Empty;
 
+    private readonly List<Conference> _conferences = new();
+
+    public IReadOnlyCollection<Conference> Conferences => _conferences.AsReadOnly();
+    
     private League()
     {
         // Required by EF Core

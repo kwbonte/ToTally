@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ToTally.Domain.Common;
+using ToTally.Domain.Conferences;
+using ToTally.Domain.Divisions;
 using ToTally.Domain.Leagues;
 using ToTally.Domain.Venues;
 
@@ -18,6 +20,9 @@ public class ToTallyDbContext : DbContext
 
     public DbSet<Venue> Venues => Set<Venue>();
 
+    public DbSet<Conference> Conferences => Set<Conference>();
+
+    public DbSet<Division> Divisions => Set<Division>();
     public override int SaveChanges()
     {
         ApplyEntityBaseRules();
@@ -60,6 +65,92 @@ public class ToTallyDbContext : DbContext
                 .HasColumnName("sport")
                 .HasMaxLength(50)
                 .IsRequired();
+
+            ConfigureEntityBase(entity);
+        });
+
+        modelBuilder.Entity<Conference>(entity =>
+        {
+            entity.ToTable("conferences");
+
+            entity.HasKey(conference => conference.Id);
+
+            entity.Property(conference => conference.Id)
+                .HasColumnName("id");
+
+            entity.Property(conference => conference.LeagueId)
+                .HasColumnName("league_id")
+                .IsRequired();
+
+            entity.Property(conference => conference.Name)
+                .HasColumnName("name")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(conference => conference.Abbreviation)
+                .HasColumnName("abbreviation")
+                .HasMaxLength(10)
+                .IsRequired();
+
+            entity.HasOne(conference => conference.League)
+                .WithMany(league => league.Conferences)
+                .HasForeignKey(conference => conference.LeagueId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(conference => new
+            {
+                conference.LeagueId,
+                conference.Name
+            }).IsUnique();
+
+            entity.HasIndex(conference => new
+            {
+                conference.LeagueId,
+                conference.Abbreviation
+            }).IsUnique();
+
+            ConfigureEntityBase(entity);
+        });
+
+        modelBuilder.Entity<Division>(entity =>
+        {
+            entity.ToTable("divisions");
+
+            entity.HasKey(division => division.Id);
+
+            entity.Property(division => division.Id)
+                .HasColumnName("id");
+
+            entity.Property(division => division.ConferenceId)
+                .HasColumnName("conference_id")
+                .IsRequired();
+
+            entity.Property(division => division.Name)
+                .HasColumnName("name")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(division => division.Abbreviation)
+                .HasColumnName("abbreviation")
+                .HasMaxLength(10)
+                .IsRequired();
+
+            entity.HasOne(division => division.Conference)
+                .WithMany(conference => conference.Divisions)
+                .HasForeignKey(division => division.ConferenceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(division => new
+            {
+                division.ConferenceId,
+                division.Name
+            }).IsUnique();
+
+            entity.HasIndex(division => new
+            {
+                division.ConferenceId,
+                division.Abbreviation
+            }).IsUnique();
 
             ConfigureEntityBase(entity);
         });
