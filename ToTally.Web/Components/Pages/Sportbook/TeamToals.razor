@@ -19,8 +19,6 @@ else
         <thead>
             <tr>
                 <th>Team</th>
-                <th>Sportsbook</th>
-                <th>Season</th>
                 <th>Total</th>
                 <th>Over</th>
                 <th>Under</th>
@@ -32,12 +30,10 @@ else
             {
                 <tr>
                     <td>@item.TeamCity @item.TeamName</td>
-                    <td>@item.SportsbookName</td>
-                    <td>@item.SeasonYear</td>
                     <td>@item.Total</td>
                     <td>@FormatOdds(item.OverAmericanOdds)</td>
                     <td>@FormatOdds(item.UnderAmericanOdds)</td>
-                    <td>@item.ObservedOnUtc.ToLocalTime().ToString("g")</td>
+                    <td>@item.SportsbookName @item.ObservedOnUtc.ToLocalTime().ToString("g")</td>
                 </tr>
             }
         </tbody>
