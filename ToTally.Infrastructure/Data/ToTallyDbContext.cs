@@ -5,6 +5,7 @@ using ToTally.Domain.Common;
 using ToTally.Domain.Conferences;
 using ToTally.Domain.Divisions;
 using ToTally.Domain.Leagues;
+using ToTally.Domain.SportsBook;
 using ToTally.Domain.Teams;
 using ToTally.Domain.Venues;
 
@@ -25,6 +26,7 @@ public class ToTallyDbContext : DbContext
 
     public DbSet<Division> Divisions => Set<Division>();
     public DbSet<Team> Teams => Set<Team>();
+    public DbSet<Sportsbook> Sportsbooks => Set<Sportsbook>();
     public override int SaveChanges()
     {
         ApplyEntityBaseRules();
@@ -252,6 +254,39 @@ public class ToTallyDbContext : DbContext
                 team.City,
                 team.Name
             }).IsUnique();
+
+            ConfigureEntityBase(entity);
+        });
+    
+        modelBuilder.Entity<Sportsbook>(entity =>
+        {
+            entity.ToTable("sportsbooks");
+
+            entity.HasKey(sportsbook => sportsbook.Id);
+
+            entity.Property(sportsbook => sportsbook.Id)
+                .HasColumnName("id");
+
+            entity.Property(sportsbook => sportsbook.Name)
+                .HasColumnName("name")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(sportsbook => sportsbook.Code)
+                .HasColumnName("code")
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(sportsbook => sportsbook.IsActive)
+                .HasColumnName("is_active")
+                .HasDefaultValue(true)
+                .IsRequired();
+
+            entity.HasIndex(sportsbook => sportsbook.Code)
+                .IsUnique();
+
+            entity.HasIndex(sportsbook => sportsbook.Name)
+                .IsUnique();
 
             ConfigureEntityBase(entity);
         });

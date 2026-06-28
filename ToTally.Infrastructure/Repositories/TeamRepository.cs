@@ -43,11 +43,7 @@ public class TeamRepository : ITeamRepository
                 VenueCity = team.Venue.City,
                 VenueStateOrCountry = team.Venue.StateOrCountry
             })
-            .OrderBy(team => team.LeagueAbbreviation)
-            .ThenBy(team => team.ConferenceAbbreviation)
-            .ThenBy(team => team.DivisionName)
-            .ThenBy(team => team.City)
-            .ThenBy(team => team.Name)
+            .OrderBy(team => team.Name)
             .ToListAsync(cancellationToken);
     }
 }
