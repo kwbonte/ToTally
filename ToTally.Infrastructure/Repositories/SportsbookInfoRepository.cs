@@ -21,7 +21,9 @@ public sealed class SportsbookInfoRepository : ISportsbookInfoRepository
     {
         return await _dbContext.TeamWinTotals
             .AsNoTracking()
-            .Where(teamWinTotal => teamWinTotal.SeasonYear == seasonYear)
+            .Include(twt => twt.Team)
+            .Include(twt => twt.Sportsbook)
+            .Where(twt => twt.SeasonYear == seasonYear)
             .ToListAsync(cancellationToken);
     }
 
