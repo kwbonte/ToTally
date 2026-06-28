@@ -27,6 +27,8 @@ public class ToTallyDbContext : DbContext
     public DbSet<Division> Divisions => Set<Division>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Sportsbook> Sportsbooks => Set<Sportsbook>();
+
+    public DbSet<TeamWinTotal> TeamWinTotals => Set<TeamWinTotal>();
     public override int SaveChanges()
     {
         ApplyEntityBaseRules();
@@ -287,6 +289,63 @@ public class ToTallyDbContext : DbContext
 
             entity.HasIndex(sportsbook => sportsbook.Name)
                 .IsUnique();
+
+            ConfigureEntityBase(entity);
+        });
+    
+        modelBuilder.Entity<TeamWinTotal>(entity =>
+        {
+            entity.ToTable("team_win_totals");
+
+            entity.HasKey(teamWinTotal => teamWinTotal.Id);
+
+            entity.Property(teamWinTotal => teamWinTotal.Id)
+                .HasColumnName("id");
+
+            entity.Property(teamWinTotal => teamWinTotal.TeamId)
+                .HasColumnName("team_id")
+                .IsRequired();
+
+            entity.Property(teamWinTotal => teamWinTotal.SportsbookId)
+                .HasColumnName("sportsbook_id")
+                .IsRequired();
+
+            entity.Property(teamWinTotal => teamWinTotal.SeasonYear)
+                .HasColumnName("season_year")
+                .IsRequired();
+
+            entity.Property(teamWinTotal => teamWinTotal.Total)
+                .HasColumnName("total")
+                .HasPrecision(5, 2)
+                .IsRequired();
+
+            entity.Property(teamWinTotal => teamWinTotal.OverAmericanOdds)
+                .HasColumnName("over_american_odds");
+
+            entity.Property(teamWinTotal => teamWinTotal.UnderAmericanOdds)
+                .HasColumnName("under_american_odds");
+
+            entity.Property(teamWinTotal => teamWinTotal.ObservedOnUtc)
+                .HasColumnName("observed_on_utc")
+                .IsRequired();
+
+            entity.HasOne(teamWinTotal => teamWinTotal.Team)
+                .WithMany()
+                .HasForeignKey(teamWinTotal => teamWinTotal.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(teamWinTotal => teamWinTotal.Sportsbook)
+                .WithMany()
+                .HasForeignKey(teamWinTotal => teamWinTotal.SportsbookId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(teamWinTotal => new
+            {
+                teamWinTotal.TeamId,
+                teamWinTotal.SportsbookId,
+                teamWinTotal.SeasonYear,
+                teamWinTotal.ObservedOnUtc
+            });
 
             ConfigureEntityBase(entity);
         });
