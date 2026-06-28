@@ -1,0 +1,64 @@
+@page "/sportsbook/team-totals"
+@using ToTally.Application.Interfaces
+@using ToTally.Application.DTOs.Sportsbook
+@inject ISportsbookInfoService SportsbookInfoService
+
+<h3>Sportsbook Team Win Totals</h3>
+
+@if (_teamWinTotals is null)
+{
+    <p>Loading...</p>
+}
+else if (_teamWinTotals.Count == 0)
+{
+    <p>No team win totals found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Sportsbook</th>
+                <th>Season</th>
+                <th>Total</th>
+                <th>Over</th>
+                <th>Under</th>
+                <th>Observed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _teamWinTotals)
+            {
+                <tr>
+                    <td>@item.TeamCity @item.TeamName</td>
+                    <td>@item.SportsbookName</td>
+                    <td>@item.SeasonYear</td>
+                    <td>@item.Total</td>
+                    <td>@FormatOdds(item.OverAmericanOdds)</td>
+                    <td>@FormatOdds(item.UnderAmericanOdds)</td>
+                    <td>@item.ObservedOnUtc.ToLocalTime().ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<SportsbookTeamWinTotalInfo>? _teamWinTotals;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _teamWinTotals = await SportsbookInfoService.GetCurrentTeamWinTotalsAsync(2026);
+    }
+
+    private static string FormatOdds(int? odds)
+    {
+        if (odds is null)
+        {
+            return "-";
+        }
+
+        return odds > 0 ? $"+{odds}" : odds.Value.ToString();
+    }
+}

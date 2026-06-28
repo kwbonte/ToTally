@@ -23,6 +23,8 @@ builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<IVenueRepository, VenueRepository>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<ISportsbookInfoRepository, SportsbookInfoRepository>();
+builder.Services.AddScoped<ISportsbookInfoService, SportsbookInfoService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
